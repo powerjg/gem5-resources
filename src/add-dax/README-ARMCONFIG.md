@@ -14,4 +14,5 @@
 	4. Device Drivers -> NVDIMM (Non-Volatile Memory Device) Support (LIBNVDIMM)
 	5. Device Drivers -> DAX: direct access to differentiated memory -> Device DAX: direct access mapping device (DEV_DAX)
 	6. File systems -> File system based Direct Access (DAX) support (FS_DAX)
+
 The main configs we want to enable here are DEV_DAX, so that we can access the device and create a devdax namespace on it, and FS_DAX. If FS_DAX is not enabled, a dmesg error will be thrown out saying that the vma is not DAX capable.
