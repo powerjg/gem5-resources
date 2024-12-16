@@ -36,8 +36,8 @@ source "qemu" "initialize" {
   format           = "raw"
   headless         = "true"
   disk_image       = "true"
-  iso_checksum     = "sha256:77a84972c212564ae4174b71f8e1561add5aaef37e391d1904048e4bc41727d6"
-  iso_urls         = ["./x86-ubuntu-24-04"]
+  iso_checksum     = "sha256:6cedf26ebf281b823b24722341d3a2ab1f1ba26b10b536916d3f23cf92a8f4b5"
+  iso_urls         = ["./x86-ubuntu-24-04-v2"]
   memory           = "8192"
   output_directory = "disk-image"
   qemu_binary      = "/usr/bin/qemu-system-x86_64"
@@ -59,7 +59,7 @@ build {
   }
 
   provisioner "file" {
-    sources      = ["files/test-read-write.cpp", "files/test-read.cpp", "files/test-write.cpp"]
+    sources      = ["files/test/test-read-write.cpp", "files/test/test-read.cpp", "files/test/test-write.cpp", "files/stream/stream.c", "files/stream/Makefile"]
     destination = "/home/${var.ssh_username}/"
   }
   
