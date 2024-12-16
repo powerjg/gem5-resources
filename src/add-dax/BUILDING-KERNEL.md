@@ -1,7 +1,35 @@
+This file provides instructions on how to create a Linux Kernel that allows
+sharing through DAX for the gem5 disaggregated memory setup.
+
+# Updating and Compiling Kernel
+
+If you simply want to use our setup without making any changes to the kernel,
+the simplest way would be to update the configs provided in this repository and
+compile the kernel. Note that if you wish to use a different version of the
+linux kernel, you may use the commands bellow but change the version number to
+your desired version (eg linux-6.11.10 -> linux-6.12.1). Bellow is an example of updating and compiling an x86 kernel:
+
+1. Download the Linux Kernel tarball
+   ([Linux Kernel v6.11.10 tarball](https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.11.10.tar.xz)).
+   - `$ wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.11.10.tar.xz`
+2. Download required packages for building the kernel:
+   - `$ sudo apt-get install git fakeroot build-essential ncurses-dev xz-utils libssl-dev bc flex libelf-dev bison`
+3. Extract the kernel directory
+   - `$ tar xf linux-6.11.10.tar.xz`
+4. Copy the config provided into the linux directory
+   - `$ cd linux-6.11.10 && cp ../configs/config.x86.6.9.9 ./.config`
+5. Update the old config
+   - `$ yes "" | make oldconfig`
+6. Compile the kernel
+   - `$ make`
+7. Add the kernel to your gem5 script
+   - "kernel=KernelResource("<path-to-this-repo>/linux-6.11.10/vmlinux")"
+
+
 # Building ARM Kernel
 
-This file provides instruction on how to create a Linux Kernel that allows
-sharing through DAX for the gem5 disaggregated memory setup. **_Note that kernel
+This section provides instructions on how to create an ARM Linux Kernel for the
+gem5 disaggregated memory setup. **_Note that kernel
 versions 6.6.63 and bellow do not have the necessary configs for the gem5
 disaggregated setup and thus will NOT work. Versions newer than 6.11.10 or older
 than 6.10.1 are untested_**
