@@ -8,7 +8,7 @@
 
 int main(int argc, char *argv[])
 {
-    // Stream array size. Each array is (1 << 22) * sizeof(int) = 64 MB
+    // Stream array size. Each array is (1 << 22) * sizeof(int) = 16 MB
     const uint64_t STREAM_SIZE = 1 << 22;
     if (argc > 3)
     {
@@ -51,37 +51,30 @@ int main(int argc, char *argv[])
 
     // Since there are a total of 3 arrays (A, B, and C), calculate the
     // start and end of each stream for the worker
-    int A_start = worker_id * (STREAM_SIZE / total_workers);
-    int A_end = A_start + (STREAM_SIZE / total_workers);
-    int B_start = A_start + STREAM_SIZE;
-    int B_end = A_end + STREAM_SIZE;
-    int C_start = B_start + STREAM_SIZE;
-    int C_end = B_end + STREAM_SIZE;
+    int *A = mmap_addr;
+    int *B = mmap_addr + STREAM_SIZE;
+    int *C = mmap_addr + 2 * STREAM_SIZE;
+    uint64_t start = worker_id * (STREAM_SIZE / total_workers);
 
     m5_work_begin(0, 0); // Exit simulation to dump stats
 
     // Initialize the streams
     // A is initialized to 1
-    for (int i = A_start; i < A_end; i++)
-    {
-        *(mmap_addr + A_start + i) = 1; // A[i] = 1
-    }
     // B is initialized to 2
-    for (int i = B_start; i < B_end; i++)
+    for (uint64_t i = start; i < (STREAM_SIZE / total_workers); i++)
     {
-        *(mmap_addr + B_start + i) = 2; // B[i] = 2
+        A[i] = 1;
+        B[i] = 2;
     }
     // C is initialized to 0
-    memset((mmap_addr + C_start), 0, (C_end - C_start) * sizeof(int));
+    memset(C, 0, (STREAM_SIZE / total_workers) * sizeof(int));
 
     ////////////////////////////// ADD OPERATION //////////////////////////////
 
     // Perform the stream operation
-    for (int i = A_start; i < A_end; i++)
+    for (uint64_t i = start; i < (STREAM_SIZE / total_workers); i++)
     {
-        // C[i] = A[i] + B[i]
-        *(mmap_addr + C_start + i) =
-            *(mmap_addr + A_start + i) + *(mmap_addr + B_start + i);
+        C[i] = A[i] + B[i];
     }
 
     m5_work_end(0, 0); // Exit simulation to dump stats
